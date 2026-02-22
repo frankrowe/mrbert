@@ -150,7 +150,7 @@ Example of the required ending format:
 });
 
 // SPA catch-all — must come after API routes
-app.get("*", (_req, res) => {
+app.get("(.*)", (_req, res) => {
   res.sendFile(join(clientDist, "index.html"));
 });
 
