@@ -2,6 +2,8 @@ import express from "express";
 import cors from "cors";
 import OpenAI from "openai";
 import "dotenv/config";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 // ── Toggle mock mode here ─────────────────────────────────
 const MOCK = false;
@@ -45,11 +47,20 @@ const MOCK_TOPICS = [
   "Topic Eta",
 ];
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const clientDist = join(__dirname, "../client/dist");
+
 const app = express();
 const port = process.env.PORT || 3001;
 
-app.use(cors({ origin: "http://localhost:5173" }));
+// In dev allow the Vite dev server; in production same-origin so CORS isn't needed
+if (process.env.NODE_ENV !== "production") {
+  app.use(cors({ origin: "http://localhost:5173" }));
+}
 app.use(express.json());
+
+// Serve built frontend
+app.use(express.static(clientDist));
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -136,6 +147,11 @@ Example of the required ending format:
     res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
     res.end();
   }
+});
+
+// SPA catch-all — must come after API routes
+app.get("*", (_req, res) => {
+  res.sendFile(join(clientDist, "index.html"));
 });
 
 app.listen(port, () => {

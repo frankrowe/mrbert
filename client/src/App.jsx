@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import "./App.css";
 
 const TOPICS_DELIMITER = "---TOPICS---";
-const API_BASE = "http://localhost:3001";
+const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 const STACK_OFFSET_DESKTOP = 10; // px per page on desktop
 const STACK_OFFSET_MOBILE = 4; // px per page on mobile (<=600px wide)
 
